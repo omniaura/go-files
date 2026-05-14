@@ -25,7 +25,7 @@ func TestNewClient_DefaultsApplied(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
-	opts := cl.Options()
+	opts := cl.SDK().Options()
 	if opts.BaseEndpoint == nil || *opts.BaseEndpoint != EndpointDefault {
 		t.Errorf("BaseEndpoint = %v, want %s", opts.BaseEndpoint, EndpointDefault)
 	}
@@ -47,7 +47,7 @@ func TestNewClient_CustomEndpoint(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
-	if got := cl.Options().BaseEndpoint; got == nil || !strings.Contains(*got, "eu-central-1") {
+	if got := cl.SDK().Options().BaseEndpoint; got == nil || !strings.Contains(*got, "eu-central-1") {
 		t.Errorf("BaseEndpoint = %v, want eu-central-1 host", got)
 	}
 }
