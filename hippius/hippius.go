@@ -1,20 +1,17 @@
-// Package hippius configures an AWS S3 client for the Hippius decentralized
-// storage gateway (https://docs.hippius.com).
+// Package hippius is a thin S3 preset for the Hippius decentralized storage
+// gateway (https://docs.hippius.com).
 //
 // Hippius is S3-compatible (SigV4, ListObjectsV2, multipart, presigned URLs),
-// but requires path-style addressing and a fixed region string. There is no
-// official Go SDK; this package returns a *s3.Client from aws-sdk-go-v2 with
-// the correct defaults applied.
+// but requires path-style addressing and a fixed region string. This package
+// returns a *s3.Client (from omniaura/go-files/s3) preconfigured with those
+// defaults; the returned client implements files.Storage.
 package hippius
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/omniaura/go-files/s3"
 )
 
 // Endpoints exposed by the Hippius S3 gateway. All point at the same data;
@@ -35,6 +32,9 @@ type Options struct {
 	AccessKeyID string
 	// SecretAccessKey is the secret shown once at token creation.
 	SecretAccessKey string
+	// Bucket is the target bucket. Optional at construction; can be bound
+	// later via (*s3.Client).WithBucket.
+	Bucket string
 	// Endpoint overrides the default gateway. Leave empty for EndpointDefault.
 	Endpoint string
 }
@@ -52,19 +52,12 @@ func NewClient(ctx context.Context, opts Options) (*s3.Client, error) {
 	if endpoint == "" {
 		endpoint = EndpointDefault
 	}
-
-	cfg, err := config.LoadDefaultConfig(ctx,
-		config.WithRegion(Region),
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
-			opts.AccessKeyID, opts.SecretAccessKey, "",
-		)),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("hippius: load aws config: %w", err)
-	}
-
-	return s3.NewFromConfig(cfg, func(o *s3.Options) {
-		o.BaseEndpoint = aws.String(endpoint)
-		o.UsePathStyle = true
-	}), nil
+	return s3.NewClient(ctx, s3.Options{
+		Bucket:          opts.Bucket,
+		Region:          Region,
+		Endpoint:        endpoint,
+		AccessKeyID:     opts.AccessKeyID,
+		SecretAccessKey: opts.SecretAccessKey,
+		UsePathStyle:    true,
+	})
 }

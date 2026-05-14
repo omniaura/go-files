@@ -4,5 +4,7 @@ toolchain go1.26.1
 
 use (
 	./b2
+	./files
 	./hippius
+	./s3
 )
