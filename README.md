@@ -14,7 +14,7 @@ available.
 | ---------- | -------- | ------------------------------------------------------ |
 | `hippius/` | ✅ ready | S3 client preset for the Hippius decentralized gateway |
 | `s3/`      | planned  | Generic S3-compatible client (AWS, MinIO, B2 S3-compat)|
-| `b2/`      | planned  | Backblaze native B2 API (uploads w/o S3 facade)        |
+| `b2/`      | ✅ ready | Backblaze native B2 API (uploads w/o S3 facade)        |
 | `blob/`    | planned  | Backend-agnostic interface (Upload, Get, Presign, …)   |
 | `presign/` | planned  | Presigned URL helpers + validity checking              |
 | `keypath/` | planned  | Object-key path validation (no traversal, subfolders)  |
